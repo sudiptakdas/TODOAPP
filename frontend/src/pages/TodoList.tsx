@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import List from '../components/List';
 
 interface taskArrayType {
   _id: string;
@@ -24,7 +25,6 @@ const TodoList: React.FC = () => {
     }
   };
 
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -48,34 +48,6 @@ const TodoList: React.FC = () => {
     }
   };
 
-  const renderData = () => {
-    return taskArray.map((item, index) => (
-      <div
-        className=' bg-yellow-50 w-full border border-black text-lg flex  text-start gap-2 p-2 justify-between items-center'
-        key={index}
-      >
-        <div>
-          <li>{item.text}</li>
-          <li>{item.description}</li>
-        </div>
-        <div className=' min-w-fit flex gap-2'>
-          <button
-            className=' text-white text-xl px-4 py-2 border border-blue bg-blue-400 rounded-xl  '
-            onClick={() => onUpdate(index)}
-          >
-            Update
-          </button>
-          <button
-            className=' text-white text-xl px-4 py-2 border border-blue bg-red-400 rounded-xl  '
-            onClick={() => onDelete(item._id)}
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    ));
-  };
-
   const onUpdate = (index: number) => {
     setIsEdit(index);
     setFormData(taskArray[index]);
@@ -92,11 +64,11 @@ const TodoList: React.FC = () => {
 
   return (
     <div className='flex flex-col gap-6 '>
-      <h1 className=' text-6xl text-white  bg-gray-800 font-semibold p-4'>
+      <h1 className=' text-6xl text-white  bg-gray-800 font-semibold p-4 rounded-xl'>
         Todo List
       </h1>
       <form onSubmit={handleFormSubmit}>
-        <div className=' flex justify-center mx-10 w-full gap-6 items-center'>
+        <div className=' flex flex-col md:flex-row justify-center mx-10 w-full gap-6 items-center'>
           <div className=' '>
             <h1 className=' font-semibold text-lg items-start flex'>
               Add Task
@@ -137,15 +109,21 @@ const TodoList: React.FC = () => {
           </div>
           <button
             type='submit'
-            className=' text-white text-xl w-2/12 mt-6 py-3 border border-blue bg-blue-700 rounded-xl  '
+            className=' text-white text-xl w-6/12 md:w-2/12 mt-6 py-3 border border-blue bg-blue-700 rounded-xl hover:scale-105 transition duration-300 ease-in-out'
           >
             {isEdit === -1 ? 'Add Task' : 'Update Task'}
           </button>
         </div>
       </form>
       <div>
-        <ul className=' grid grid-cols-2 gap-4 mx-4 p-2'>
-          {renderData().length > 0 && renderData()}
+        <ul className=' grid grid-cols-1 md:grid-cols-2 gap-4 mx-4 p-2'>
+          {
+            <List
+              taskArray={taskArray}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+            />
+          }
         </ul>
       </div>
     </div>
