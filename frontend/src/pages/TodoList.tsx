@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTodo } from '../slices/todoSlice';
+import { addTodo, doneTodo } from '../slices/todoSlice';
 import List from '../components/List';
+
+interface RootState {
+  todos: {
+    todos: taskArrayType[];
+  };
+}
 
 interface taskArrayType {
   _id: string;
@@ -12,7 +18,9 @@ interface taskArrayType {
 }
 
 const TodoList: React.FC = () => {
-  const todos: taskArrayType[] = useSelector((state: any) => state.todos.todos);
+  const todos: taskArrayType[] = useSelector(
+    (state: RootState) => state.todos.todos
+  );
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
@@ -65,6 +73,7 @@ const TodoList: React.FC = () => {
   const onChecked = async (_id: string, completed: boolean) => {
     try {
       await axios.patch(`http://localhost:3000/api/todo/${_id}`, { completed });
+      dispatch(doneTodo(_id));
       fetchData();
     } catch (error) {
       console.error('Error toggling completion status:', error);
