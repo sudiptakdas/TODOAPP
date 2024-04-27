@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { addTodo } from '../slices/todoSlice';
 import List from '../components/List';
 
 interface taskArrayType {
@@ -10,6 +12,9 @@ interface taskArrayType {
 }
 
 const TodoList: React.FC = () => {
+  const todos: taskArrayType[] = useSelector((state: any) => state.todos.todos);
+  const dispatch = useDispatch();
+  
   const [formData, setFormData] = useState({
     text: '',
     description: '',
@@ -20,6 +25,7 @@ const TodoList: React.FC = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/todos');
+      dispatch(addTodo(response.data));
       setTaskArray(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
