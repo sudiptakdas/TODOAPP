@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { addTodo, doneTodo } from '../slices/todoSlice';
+import { addTodo, editTodo, doneTodo } from '../slices/todoSlice';
 import List from '../components/List';
 
 interface RootState {
@@ -48,17 +48,19 @@ const TodoList: React.FC = () => {
     try {
       if (isEdit !== '') {
         await axios.patch(`http://localhost:3000/api/todo/${isEdit}`, formData);
+        dispatch(editTodo({ _id: isEdit, ...formData }));
         setIsEdit('');
       } else {
         await axios.post('http://localhost:3000/api/todo', formData);
+        fetchData();
       }
       setFormData({ text: '', description: '' });
-      fetchData();
     } catch (error) {
       console.error('Error submitting form:', error);
     }
   };
 
+  console.log(todos, '@@@@@');
   const onUpdate = (_id: string) => {
     setIsEdit(_id);
     const editedTodo = todos.find((ele: taskArrayType) => ele._id === _id);
