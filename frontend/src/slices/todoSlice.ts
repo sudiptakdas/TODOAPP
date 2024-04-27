@@ -1,4 +1,3 @@
-// slices/todoSlice.js
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface Todo {
