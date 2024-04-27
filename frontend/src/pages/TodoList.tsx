@@ -14,19 +14,18 @@ interface taskArrayType {
 const TodoList: React.FC = () => {
   const todos: taskArrayType[] = useSelector((state: any) => state.todos.todos);
   const dispatch = useDispatch();
-  
+
   const [formData, setFormData] = useState({
     text: '',
     description: '',
   });
-  const [taskArray, setTaskArray] = useState<Array<taskArrayType>>([]);
-  const [isEdit, setIsEdit] = useState(-1);
+
+  const [isEdit, setIsEdit] = useState('');
 
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/todos');
       dispatch(addTodo(response.data));
-      setTaskArray(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -39,12 +38,9 @@ const TodoList: React.FC = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (isEdit > -1) {
-        await axios.patch(
-          `http://localhost:3000/api/todo/${taskArray[isEdit]._id}`,
-          formData
-        );
-        setIsEdit(-1);
+      if (isEdit !== '') {
+        await axios.patch(`http://localhost:3000/api/todo/${isEdit}`, formData);
+        setIsEdit('');
       } else {
         await axios.post('http://localhost:3000/api/todo', formData);
       }
@@ -55,9 +51,15 @@ const TodoList: React.FC = () => {
     }
   };
 
-  const onUpdate = (index: number) => {
-    setIsEdit(index);
-    setFormData(taskArray[index]);
+  const onUpdate = (_id: string) => {
+    setIsEdit(_id);
+    const editedTodo = todos.find((ele: taskArrayType) => ele._id === _id);
+    if (editedTodo) {
+      setFormData({
+        text: editedTodo.text,
+        description: editedTodo.description,
+      });
+    }
   };
 
   const onChecked = async (_id: string, completed: boolean) => {
@@ -126,7 +128,7 @@ const TodoList: React.FC = () => {
             type='submit'
             className=' text-white text-xl w-6/12 md:w-2/12 mt-6 py-3 border border-blue bg-blue-700 rounded-xl hover:scale-105 transition duration-300 ease-in-out'
           >
-            {isEdit === -1 ? 'Add Task' : 'Update Task'}
+            {isEdit === '' ? 'Add Task' : 'Update Task'}
           </button>
         </div>
       </form>
@@ -134,7 +136,7 @@ const TodoList: React.FC = () => {
         <ul className=' grid grid-cols-1 md:grid-cols-2 gap-4 mx-4 p-2'>
           {
             <List
-              taskArray={taskArray}
+              taskArray={todos}
               onUpdate={onUpdate}
               onChecked={onChecked}
               onDelete={onDelete}

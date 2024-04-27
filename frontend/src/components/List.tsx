@@ -9,7 +9,7 @@ interface TaskItem {
 
 interface ListType {
   taskArray: TaskItem[];
-  onUpdate: (index: number) => void;
+  onUpdate: (_id: string) => void;
   onChecked: (_id: string, completed: boolean) => void;
   onDelete: (_id: string) => void;
 }
@@ -44,7 +44,7 @@ const List: React.FC<ListType> = ({
               ? 'hover:bg-blue-600 hover:scale-105 transition duration-300 ease-in-out'
               : ''
           }`}
-          onClick={() => onUpdate(index)}
+          onClick={() => onUpdate(item._id)}
           disabled={item.completed}
         >
           Update
