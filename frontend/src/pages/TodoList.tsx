@@ -5,6 +5,7 @@ import List from '../components/List';
 interface taskArrayType {
   _id: string;
   text: string;
+  completed: boolean;
   description: string;
 }
 
@@ -53,6 +54,14 @@ const TodoList: React.FC = () => {
     setFormData(taskArray[index]);
   };
 
+  const onChecked = async (_id: string, completed: boolean) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/todo/${_id}`, { completed });
+      fetchData();
+    } catch (error) {
+      console.error('Error toggling completion status:', error);
+    }
+  };
   const onDelete = async (id: string) => {
     try {
       await axios.delete(`http://localhost:3000/api/todo/${id}`);
@@ -121,6 +130,7 @@ const TodoList: React.FC = () => {
             <List
               taskArray={taskArray}
               onUpdate={onUpdate}
+              onChecked={onChecked}
               onDelete={onDelete}
             />
           }
